@@ -75,7 +75,7 @@ lspconfig.util.default_config = vim.tbl_extend(
       vim.lsp.protocol.make_client_capabilities(),
       -- returns configured operations if setup() was already called
       -- or default operations if not
-      require'lsp-file-operations.config'.default_capabilities(),
+      require'nvim-file-operations.config'.default_capabilities(),
     )
   }
 )

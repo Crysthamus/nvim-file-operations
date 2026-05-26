@@ -13,6 +13,8 @@ It works by subscribing to events emitted by file managers like [`nvim-tree`](ht
   - [`workspace/didDeleteFiles`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_didDeleteFiles)
 
 It also has faster startup times and better performance than `nvim-lsp-file-operations`
+<img width="432" height="40" alt="2026-05-26 11-16-25" src="https://github.com/user-attachments/assets/16f4b8f3-257d-4393-be91-e91b6451042f" />
+
 
 ## Installation
 

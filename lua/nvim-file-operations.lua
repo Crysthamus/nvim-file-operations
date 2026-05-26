@@ -2,8 +2,15 @@ local M = {}
 
 ---@param opts? Options
 function M.setup(opts)
-  require("nvim-file-operations.config").setup(opts)
-  require("nvim-file-operations.adapters")
+  local config = require("nvim-file-operations.config")
+  config.setup(opts)
+
+  vim.schedule(function()
+    require("nvim-file-operations.adapters")
+    if config.options.auto_save then
+      require("nvim-file-operations.autosave").setup()
+    end
+  end)
 end
 
 --- Renames a file on disk, updates matching Neovim buffers, and notifies LSP clients.

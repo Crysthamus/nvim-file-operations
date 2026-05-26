@@ -57,6 +57,8 @@ require("nvim-file-operations").setup({
   },
   -- How long to wait (in milliseconds) for LSP responses before cancelling
   timeout_ms = 10000,
+  -- Saves modifies files after renames, moves, etc.
+  auto_save = false
 })
 ```
 

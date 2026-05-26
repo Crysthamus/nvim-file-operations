@@ -1,6 +1,7 @@
 local M = {}
 
 ---@class Options
+---@field auto_save? boolean
 ---@field timeout_ms? number
 ---@field did_create_files? boolean
 ---@field did_delete_files? boolean
@@ -11,6 +12,7 @@ local M = {}
 
 ---@type Options
 local defaults = {
+  auto_save = false,
   timeout_ms = 10000,
   did_create_files = true,
   did_delete_files = true,
@@ -31,15 +33,9 @@ local capabilities = {
 
 M.options = {}
 
+---@param opts Options?
 M.setup = function(opts)
-  opts = opts or {}
-  for k, default_val in pairs(defaults) do
-    if opts[k] ~= nil then
-      M.options[k] = opts[k]
-    else
-      M.options[k] = default_val
-    end
-  end
+  M.options = vim.tbl_deep_extend("force", defaults, opts or {})
 end
 
 M.default_capabilities = function()

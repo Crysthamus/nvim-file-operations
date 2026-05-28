@@ -36,6 +36,7 @@ return {
   },
 }
 ```
+Please use `branch = "compat"`, if you are using versions older than 0.11
 
 ## Setup
 Initialize the plugin with the default configuration:

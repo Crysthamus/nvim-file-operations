@@ -63,17 +63,10 @@ require("nvim-file-operations").setup({
 })
 ```
 
-Some LSP servers also expect to be informed about the extended client capabilities.
-If you use nvim-lspconfig you can configure the default client capabilities that will be sent to all servers like this:
+Some LSP servers also expect to be informed about the extended client capabilities:
 ```lua
-local capabilities = vim.tbl_deep_extend(
-  "force",
-  vim.lsp.protocol.make_client_capabilities(),
-  require("nvim-file-operations.config").default_capabilities()
-)
-
 vim.lsp.config("*", {
-  capabilities = capabilities,
+  capabilities = require("nvim-file-operations.config").default_capabilities(),
 })
 ```
 

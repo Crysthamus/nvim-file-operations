@@ -1,0 +1,27 @@
+name: panvimdoc
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md 
+      - .github/workflows/panvimdoc.yml 
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    name: pandoc to vimdoc
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: kdheepak/panvimdoc@main
+        with:
+          vimdoc: ${{ github.event.repository.name }}
+          version: "Neovim >= 0.8.0"
+
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: generate vimdoc"

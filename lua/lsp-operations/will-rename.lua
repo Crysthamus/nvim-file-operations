@@ -21,7 +21,7 @@ M.callback = function(data)
 
     if will_rename and utils.matches_filters(will_rename.filters, data.old_name) then
       local success, response = pcall(function()
-        return client:request_sync("workspace/willRenameFiles", params, config.options.timeout_ms)
+        return client.request_sync("workspace/willRenameFiles", params, config.options.timeout_ms)
       end)
 
       if success and response and response.result then

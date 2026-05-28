@@ -45,6 +45,6 @@ M.matches_filters = function(filters, fname)
   return false
 end
 
-M.get_clients = vim.lsp.get_clients
+M.get_clients = vim.lsp.get_active_clients
 
 return M

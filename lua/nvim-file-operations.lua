@@ -44,7 +44,7 @@ M.rename = function(opts)
     vim.fn.mkdir(target_dir, "p")
   end
 
-  local success, err = vim.uv.fs_rename(old_name, new_name)
+  local success, err = vim.loop.fs_rename(old_name, new_name)
   if not success then
     vim.notify("[nvim-file-operations] Rename failed: " .. tostring(err), vim.log.levels.ERROR)
     return
@@ -91,12 +91,12 @@ M.create = function(opts)
     vim.fn.mkdir(target_dir, "p")
   end
 
-  local fd, err = vim.uv.fs_open(fname, "w", 438)
+  local fd, err = vim.loop.fs_open(fname, "w", 438)
   if not fd then
     vim.notify("[nvim-file-operations] Create failed: " .. tostring(err), vim.log.levels.ERROR)
     return
   end
-  vim.uv.fs_close(fd)
+  vim.loop.fs_close(fd)
 
   local ok_did, did_create = pcall(require, "lsp-operations.did-create")
   if ok_did then
@@ -125,7 +125,7 @@ M.delete = function(opts)
     will_delete.callback(data)
   end
 
-  local stat = vim.uv.fs_stat(fname)
+  local stat = vim.loop.fs_stat(fname)
   if not stat then
     vim.notify("[nvim-file-operations] File does not exist", vim.log.levels.WARN)
     return
@@ -133,9 +133,9 @@ M.delete = function(opts)
 
   local success, err
   if stat.type == "directory" then
-    success, err = vim.uv.fs_rmdir(fname)
+    success, err = vim.loop.fs_rmdir(fname)
   else
-    success, err = vim.uv.fs_unlink(fname)
+    success, err = vim.loop.fs_unlink(fname)
   end
 
   if not success then

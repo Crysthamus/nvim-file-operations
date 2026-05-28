@@ -14,7 +14,7 @@ M.callback = function(data)
     local did_create = utils.get_nested_path(client, DID_CREATE_PATH)
 
     if did_create and utils.matches_filters(did_create.filters, data.fname) then
-      client:notify("workspace/didCreateFiles", params)
+      client.notify("workspace/didCreateFiles", params)
     end
   end
 end

@@ -30,6 +30,8 @@ return {
       -- "nvim-neo-tree/neo-tree.nvim",
       -- "simonmclean/triptych.nvim"
     },
+    -- Provides support for older neovim versions
+    branch = "compat",
     config = function()
       require("nvim-file-operations").setup()
     end,

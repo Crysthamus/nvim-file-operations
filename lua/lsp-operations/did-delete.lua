@@ -14,7 +14,7 @@ M.callback = function(data)
     local did_delete = utils.get_nested_path(client, DID_DELETE_PATH)
 
     if did_delete and utils.matches_filters(did_delete.filters, data.fname) then
-      client:notify("workspace/didDeleteFiles", params)
+      client.notify("workspace/didCreateFiles", params)
     end
   end
 end

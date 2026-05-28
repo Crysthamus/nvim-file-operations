@@ -16,7 +16,7 @@ M.callback = function(data)
 
     if will_delete and utils.matches_filters(will_delete.filters, data.fname) then
       local success, response = pcall(function()
-        return client:request_sync("workspace/willDeleteFiles", params, config.options.timeout_ms)
+        return client.request_sync("workspace/willDeleteFiles", params, config.options.timeout_ms)
       end)
 
       if success and response and response.result then

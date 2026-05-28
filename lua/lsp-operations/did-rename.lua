@@ -19,7 +19,7 @@ M.callback = function(data)
     local did_rename = utils.get_nested_path(client, DID_RENAME_PATH)
 
     if did_rename and utils.matches_filters(did_rename.filters, data.old_name) then
-      client:notify("workspace/didRenameFiles", params)
+      client.notify("workspace/didCreateFiles", params)
     end
   end
 end

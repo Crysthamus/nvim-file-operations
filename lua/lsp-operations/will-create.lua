@@ -16,7 +16,7 @@ M.callback = function(data)
 
     if will_create and utils.matches_filters(will_create.filters, data.fname) then
       local success, response = pcall(function()
-        return client:request_sync("workspace/willCreateFiles", params, config.options.timeout_ms)
+        return client.request_sync("workspace/willCreateFiles", params, config.options.timeout_ms)
       end)
 
       if success and response and response.result then

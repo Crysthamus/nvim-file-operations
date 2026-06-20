@@ -1,3 +1,4 @@
+---@class NvimFileOps.Autosave
 local M = {}
 
 --- Safely writes a specific buffer to disk if it has unsaved mutations
@@ -18,7 +19,7 @@ local function save_buffers(uris)
         and vim.bo[bufnr].modified
       then
         vim.api.nvim_buf_call(bufnr, function()
-          vim.cmd("silent! update")
+          vim.cmd.update({ mods = { silent = true } })
         end)
       end
     end
@@ -26,11 +27,11 @@ local function save_buffers(uris)
 end
 
 --- Parses an incoming LSP WorkspaceEdit structure and updates modified files
----@param workspace_edit table? The standard LSP WorkspaceEdit object payload
+---@param workspace_edit? table The standard LSP WorkspaceEdit object payload
 ---@return string[] uris Array of unique URIs
 local function extract_uris(workspace_edit)
-  local uris = {}
-  local seen = {}
+  ---@type string[], table<string, boolean>
+  local uris, seen = {}, {}
 
   if not workspace_edit then
     return uris
@@ -68,8 +69,7 @@ function M.setup()
   vim.lsp.util.apply_workspace_edit = function(workspace_edit, offset_encoding, ...)
     local execution_result = original_apply_workspace_edit(workspace_edit, offset_encoding, ...)
 
-    local uris = extract_uris(workspace_edit)
-    save_buffers(uris)
+    save_buffers(extract_uris(workspace_edit))
 
     return execution_result
   end

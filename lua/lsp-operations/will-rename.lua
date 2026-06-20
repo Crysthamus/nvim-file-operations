@@ -1,10 +1,11 @@
-local utils = require("lsp-operations.utils")
-local config = require("nvim-file-operations.config")
+---@class LspOps.WillRename
 local M = {}
 
 local WILL_RENAME_PATH = { "server_capabilities", "workspace", "fileOperations", "willRename" }
 
-M.callback = function(data)
+function M.callback(data)
+  local utils = require("lsp-operations.utils")
+  local config = require("nvim-file-operations.config")
   local params = {
     files = {
       {
@@ -14,9 +15,7 @@ M.callback = function(data)
     },
   }
 
-  local clients = utils.get_clients()
-  for i = 1, #clients do
-    local client = clients[i]
+  for _, client in ipairs(utils.get_clients()) do
     local will_rename = utils.get_nested_path(client, WILL_RENAME_PATH)
 
     if will_rename and utils.matches_filters(will_rename.filters, data.old_name) then

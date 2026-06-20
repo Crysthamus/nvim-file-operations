@@ -1,3 +1,4 @@
+---@class LspOps.Utils
 local M = {}
 
 local regex_cache = {}
@@ -5,29 +6,29 @@ local regex_cache = {}
 --- Safely and rapidly traverse nested tables
 ---@param obj table
 ---@param path string[]
----@return any|nil
-M.get_nested_path = function(obj, path)
+---@return any current
+function M.get_nested_path(obj, path)
   local current = obj
-  for i = 1, #path do
+  for _, value in ipairs(path) do
     if type(current) ~= "table" then
       return nil
     end
-    current = current[path[i]]
+    current = current[value]
   end
   return current
 end
 
 --- Validates file patterns using Neovim's internal C-regex engine
----@param filters table|nil
+---@param filters? table
 ---@param fname string
----@return boolean
-M.matches_filters = function(filters, fname)
+---@return boolean matches
+function M.matches_filters(filters, fname)
   if not filters or #filters == 0 then
     return true
   end
 
-  for i = 1, #filters do
-    local glob = filters[i].pattern and filters[i].pattern.glob
+  for _, filter in ipairs(filters) do
+    local glob = filter.pattern and filter.pattern.glob
     if glob then
       local regex = regex_cache[glob]
 

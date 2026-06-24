@@ -1,6 +1,7 @@
+---@class NvimFileOps.Config
 local M = {}
 
----@class Options
+---@class NvimFileOps.Options
 ---@field auto_save? boolean
 ---@field timeout_ms? number
 ---@field did_create_files? boolean
@@ -9,8 +10,6 @@ local M = {}
 ---@field will_create_files? boolean
 ---@field will_delete_files? boolean
 ---@field will_rename_files? boolean
-
----@type Options
 local defaults = {
   auto_save = false,
   timeout_ms = 10000,
@@ -22,6 +21,7 @@ local defaults = {
   will_rename_files = true,
 }
 
+---@enum NvimFileOps.Capabilities
 local capabilities = {
   will_rename_files = "willRename",
   did_rename_files = "didRename",
@@ -31,16 +31,19 @@ local capabilities = {
   did_delete_files = "didDelete",
 }
 
+---@type NvimFileOps.Options
 M.options = {}
 
----@param opts Options?
-M.setup = function(opts)
+---@param opts? NvimFileOps.Options
+function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", defaults, opts or {})
 end
 
-M.default_capabilities = function()
-  local config = next(M.options) == nil and defaults or M.options
+---@return lsp.ServerCapabilities result
+function M.default_capabilities()
+  local config = vim.tbl_isempty(M.options) and defaults or M.options
 
+  ---@type lsp.ServerCapabilities
   local result = {
     workspace = {
       fileOperations = {},

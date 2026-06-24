@@ -1,9 +1,11 @@
-local utils = require("lsp-operations.utils")
+---@class LspOps.DidRename
 local M = {}
 
 local DID_RENAME_PATH = { "server_capabilities", "workspace", "fileOperations", "didRename" }
 
-M.callback = function(data)
+---@param data { old_name: string, new_name: string }
+function M.callback(data)
+  local utils = require("lsp-operations.utils")
   local params = {
     files = {
       {
@@ -13,9 +15,7 @@ M.callback = function(data)
     },
   }
 
-  local clients = utils.get_clients()
-  for i = 1, #clients do
-    local client = clients[i]
+  for _, client in ipairs(utils.get_clients()) do
     local did_rename = utils.get_nested_path(client, DID_RENAME_PATH)
 
     if did_rename and utils.matches_filters(did_rename.filters, data.old_name) then

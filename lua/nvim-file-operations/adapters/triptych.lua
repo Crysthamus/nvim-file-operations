@@ -1,8 +1,8 @@
+---@class NvimFileOps.Adapters.Triptych
 local M = {}
 
-M.setup = function()
-  local events_engine = require("nvim-file-operations.events")
-  local ok_triptych, _ = pcall(require, "triptych")
+function M.setup()
+  local ok_triptych = pcall(require, "triptych")
   if not ok_triptych then
     return
   end
@@ -16,23 +16,18 @@ M.setup = function()
     did_delete_files = { "TriptychDidDeleteNode" },
   }
 
-  events_engine.bind_adapters(events, function(handler_module, file_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, file_event)
     vim.api.nvim_create_autocmd("User", {
       pattern = file_event,
       desc = "nvim-file-operations triptych adapter",
       callback = function(event)
-        local data = event.data
-        if not data then
+        if not event.data then
           return
         end
 
-        local payload = nil
-
-        if data.from_path and data.to_path then
-          payload = { old_name = data.from_path, new_name = data.to_path }
-        elseif data.path then
-          payload = { fname = data.path }
-        end
+        local payload = (event.data.from_path and event.data.to_path)
+            and { old_name = event.data.from_path, new_name = event.data.to_path }
+          or (event.data.path and { fname = event.data.path } or nil)
 
         if payload then
           require(handler_module).callback(payload)

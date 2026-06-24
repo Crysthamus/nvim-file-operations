@@ -1,9 +1,9 @@
+---@class NvimFileOps.Adapters.NvimTree
 local M = {}
 
-M.setup = function()
-  local events_engine = require("nvim-file-operations.events")
+function M.setup()
   local ok_nvim_tree, nvim_tree_api = pcall(require, "nvim-tree.api")
-  if not ok_nvim_tree then
+  if not (ok_nvim_tree and nvim_tree_api) then
     return
   end
 
@@ -15,7 +15,7 @@ M.setup = function()
     did_delete_files = { nvim_tree_events.FileRemoved },
   }
 
-  events_engine.bind_adapters(events, function(handler_module, tree_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, tree_event)
     nvim_tree_api.events.subscribe(tree_event, function(args)
       require(handler_module).callback(args)
     end)

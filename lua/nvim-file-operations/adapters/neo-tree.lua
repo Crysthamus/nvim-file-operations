@@ -1,9 +1,9 @@
+---@class NvimFileOps.Adapters.NeoTree
 local M = {}
 
-M.setup = function()
-  local events_engine = require("nvim-file-operations.events")
+function M.setup()
   local ok_neo_tree, neo_tree_events = pcall(require, "neo-tree.events")
-  if not ok_neo_tree then
+  if not (ok_neo_tree and neo_tree_events) then
     return
   end
 
@@ -16,19 +16,17 @@ M.setup = function()
     did_delete_files = { neo_tree_events.FILE_DELETED },
   }
 
-  events_engine.bind_adapters(events, function(handler_module, tree_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, tree_event)
     local id = ("%s.%s"):format(handler_module, tree_event)
     neo_tree_events.unsubscribe({ id = id })
     neo_tree_events.subscribe({
       id = id,
       event = tree_event,
       handler = function(args)
-        if type(args) == "table" then
-          args = { old_name = args.source, new_name = args.destination }
-        else
-          args = { fname = args }
-        end
-        require(handler_module).callback(args)
+        require(handler_module).callback(
+          type(args) == "table" and { old_name = args.source, new_name = args.destination }
+            or { fname = args }
+        )
       end,
     })
   end)

@@ -1,16 +1,16 @@
-local utils = require("lsp-operations.utils")
+---@class LspOps.DidDelete
 local M = {}
 
 local DID_DELETE_PATH = { "server_capabilities", "workspace", "fileOperations", "didDelete" }
 
-M.callback = function(data)
+---@param data { fname: string }
+function M.callback(data)
+  local utils = require("lsp-operations.utils")
   local params = {
     files = { { uri = vim.uri_from_fname(data.fname) } },
   }
 
-  local clients = utils.get_clients()
-  for i = 1, #clients do
-    local client = clients[i]
+  for _, client in ipairs(utils.get_clients()) do
     local did_delete = utils.get_nested_path(client, DID_DELETE_PATH)
 
     if did_delete and utils.matches_filters(did_delete.filters, data.fname) then

@@ -1,17 +1,17 @@
-local utils = require("lsp-operations.utils")
-local config = require("nvim-file-operations.config")
+---@class LspOps.WillDelete
 local M = {}
 
 local WILL_DELETE_PATH = { "server_capabilities", "workspace", "fileOperations", "willDelete" }
 
-M.callback = function(data)
+---@param data { fname: string }
+function M.callback(data)
+  local utils = require("lsp-operations.utils")
+  local config = require("nvim-file-operations.config")
   local params = {
     files = { { uri = vim.uri_from_fname(data.fname) } },
   }
 
-  local clients = utils.get_clients()
-  for i = 1, #clients do
-    local client = clients[i]
+  for _, client in ipairs(utils.get_clients()) do
     local will_delete = utils.get_nested_path(client, WILL_DELETE_PATH)
 
     if will_delete and utils.matches_filters(will_delete.filters, data.fname) then

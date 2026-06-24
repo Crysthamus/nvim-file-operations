@@ -1,9 +1,10 @@
+---@class NvimFileOps
 local M = {}
 
----@param opts? Options
+---@param opts? NvimFileOps.Options
 function M.setup(opts)
   local config = require("nvim-file-operations.config")
-  config.setup(opts)
+  config.setup(opts or {})
 
   vim.schedule(function()
     require("nvim-file-operations.adapters")
@@ -14,17 +15,17 @@ function M.setup(opts)
 end
 
 --- Renames a file on disk, updates matching Neovim buffers, and notifies LSP clients.
----@param opts table { old_name?: string, new_name: string }
-M.rename = function(opts)
+---@param opts { old_name?: string, new_name: string }
+function M.rename(opts)
   opts = opts or {}
-  local new_name = opts.new_name
+  local new_name = opts.new_name or ""
 
   if not new_name or new_name == "" then
     vim.notify("[nvim-file-operations] new_name is required", vim.log.levels.ERROR)
     return
   end
 
-  local old_name = opts.old_name or vim.api.nvim_buf_get_name(0)
+  local old_name = opts.old_name or vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
   if not old_name or old_name == "" then
     vim.notify("[nvim-file-operations] No active file to rename", vim.log.levels.ERROR)
     return
@@ -35,7 +36,7 @@ M.rename = function(opts)
   local data = { old_name = old_name, new_name = new_name }
 
   local ok_will, will_rename = pcall(require, "lsp-operations.will-rename")
-  if ok_will then
+  if ok_will and will_rename then
     will_rename.callback(data)
   end
 
@@ -50,26 +51,24 @@ M.rename = function(opts)
     return
   end
 
-  local bufs = vim.api.nvim_list_bufs()
-  for i = 1, #bufs do
-    local buf = bufs[i]
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) == old_name then
       vim.api.nvim_buf_set_name(buf, new_name)
       vim.api.nvim_buf_call(buf, function()
-        vim.cmd("silent! edit!")
+        vim.cmd.edit({ bang = true, mods = { silent = true } })
       end)
     end
   end
 
   local ok_did, did_rename = pcall(require, "lsp-operations.did-rename")
-  if ok_did then
+  if ok_did and did_rename then
     did_rename.callback(data)
   end
 end
 
 --- Creates a new file on disk, ensures parent directories exist, and notifies LSP clients.
----@param opts table { fname: string }
-M.create = function(opts)
+---@param opts { fname?: string, name?: string }
+function M.create(opts)
   opts = opts or {}
   local fname = opts.fname or opts.name
 
@@ -82,7 +81,7 @@ M.create = function(opts)
   local data = { fname = fname }
 
   local ok_will, will_create = pcall(require, "lsp-operations.will-create")
-  if ok_will then
+  if ok_will and will_create then
     will_create.callback(data)
   end
 
@@ -99,18 +98,18 @@ M.create = function(opts)
   vim.uv.fs_close(fd)
 
   local ok_did, did_create = pcall(require, "lsp-operations.did-create")
-  if ok_did then
+  if ok_did and did_create then
     did_create.callback(data)
   end
 
-  vim.cmd("edit " .. vim.fn.fnameescape(fname))
+  vim.cmd.edit(vim.fn.fnameescape(fname))
 end
 
 --- Deletes a file or directory from disk, wipes matching buffers, and notifies LSP clients.
----@param opts table { fname?: string }
-M.delete = function(opts)
+---@param opts? { fname?: string, name?: string }
+function M.delete(opts)
   opts = opts or {}
-  local fname = opts.fname or opts.name or vim.api.nvim_buf_get_name(0)
+  local fname = opts.fname or opts.name or vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
 
   if not fname or fname == "" then
     vim.notify("[nvim-file-operations] No target file to delete", vim.log.levels.ERROR)
@@ -121,7 +120,7 @@ M.delete = function(opts)
   local data = { fname = fname }
 
   local ok_will, will_delete = pcall(require, "lsp-operations.will-delete")
-  if ok_will then
+  if ok_will and will_delete then
     will_delete.callback(data)
   end
 
@@ -143,16 +142,14 @@ M.delete = function(opts)
     return
   end
 
-  local bufs = vim.api.nvim_list_bufs()
-  for i = 1, #bufs do
-    local buf = bufs[i]
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) == fname then
       vim.api.nvim_buf_delete(buf, { force = true })
     end
   end
 
   local ok_did, did_delete = pcall(require, "lsp-operations.did-delete")
-  if ok_did then
+  if ok_did and did_delete then
     did_delete.callback(data)
   end
 end

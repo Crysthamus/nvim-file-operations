@@ -3,6 +3,7 @@ local M = {}
 
 local WILL_DELETE_PATH = { "server_capabilities", "workspace", "fileOperations", "willDelete" }
 
+---@param data { fname: string }
 function M.callback(data)
   local utils = require("lsp-operations.utils")
   local config = require("nvim-file-operations.config")

@@ -3,6 +3,7 @@ local M = {}
 
 local DID_CREATE_PATH = { "server_capabilities", "workspace", "fileOperations", "didCreate" }
 
+---@param data { fname: string }
 function M.callback(data)
   local utils = require("lsp-operations.utils")
   local params = {

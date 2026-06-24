@@ -1,6 +1,21 @@
 ---@class NvimFileOps.Autosave
 local M = {}
 
+---@type table<string, boolean>
+local seen = {}
+
+---@param uri string
+---@param uris string[]
+---@return string[] uris
+local function add_uri(uri, uris)
+  if uri and not seen[uri] then
+    seen[uri] = true
+    table.insert(uris, uri)
+  end
+
+  return uris
+end
+
 --- Safely writes a specific buffer to disk if it has unsaved mutations
 ---@param uris string[] List of URIs to process
 local function save_buffers(uris)
@@ -30,30 +45,24 @@ end
 ---@param workspace_edit? table The standard LSP WorkspaceEdit object payload
 ---@return string[] uris Array of unique URIs
 local function extract_uris(workspace_edit)
-  ---@type string[], table<string, boolean>
-  local uris, seen = {}, {}
+  ---@type string[]
+  local uris = {}
+  seen = {}
 
   if not workspace_edit then
     return uris
   end
 
-  local function add_uri(uri)
-    if uri and not seen[uri] then
-      seen[uri] = true
-      table.insert(uris, uri)
-    end
-  end
-
   if workspace_edit.changes then
     for uri, _ in pairs(workspace_edit.changes) do
-      add_uri(uri)
+      uris = add_uri(uri, uris)
     end
   end
 
   if workspace_edit.documentChanges then
     for _, change in ipairs(workspace_edit.documentChanges) do
       if type(change) == "table" and change.textDocument and change.textDocument.uri then
-        add_uri(change.textDocument.uri)
+        uris = add_uri(change.textDocument.uri, uris)
       end
     end
   end

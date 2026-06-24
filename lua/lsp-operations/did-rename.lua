@@ -3,6 +3,7 @@ local M = {}
 
 local DID_RENAME_PATH = { "server_capabilities", "workspace", "fileOperations", "didRename" }
 
+---@param data { old_name: string, new_name: string }
 function M.callback(data)
   local utils = require("lsp-operations.utils")
   local params = {

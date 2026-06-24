@@ -33,8 +33,7 @@ function M.matches_filters(filters, fname)
       local regex = regex_cache[glob]
 
       if not regex then
-        local regpat = vim.fn.glob2regpat(glob)
-        regex = vim.regex(regpat)
+        regex = vim.regex(vim.fn.glob2regpat(glob))
         regex_cache[glob] = regex
       end
 

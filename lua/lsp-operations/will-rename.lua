@@ -3,6 +3,7 @@ local M = {}
 
 local WILL_RENAME_PATH = { "server_capabilities", "workspace", "fileOperations", "willRename" }
 
+---@param data { old_name: string, new_name: string }
 function M.callback(data)
   local utils = require("lsp-operations.utils")
   local config = require("nvim-file-operations.config")

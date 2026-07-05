@@ -48,18 +48,16 @@ To override the defaults, pass an options table:
 ```lua
 require("nvim-file-operations").setup({
   -- Select which file operations to enable
-  operations = {
-    willRenameFiles = true,
-    didRenameFiles = true,
-    willCreateFiles = true,
-    didCreateFiles = true,
-    willDeleteFiles = true,
-    didDeleteFiles = true,
-  },
+  will_rename_files = true,
+  did_rename_files = true,
+  will_create_files = true,
+  did_create_files = true,
+  will_delete_files = true,
+  did_delete_files = true,
   -- How long to wait (in milliseconds) for LSP responses before cancelling
   timeout_ms = 10000,
   -- Saves modifies files after renames, moves, etc.
-  auto_save = false
+  auto_save = false,
 })
 ```
 

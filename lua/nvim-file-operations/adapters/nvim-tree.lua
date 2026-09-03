@@ -15,9 +15,9 @@ function M.setup()
     did_delete_files = { nvim_tree_events.FileRemoved },
   }
 
-  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, tree_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(module, fn_name, tree_event)
     nvim_tree_api.events.subscribe(tree_event, function(args)
-      require(handler_module).callback(args)
+      require(module)[fn_name](args)
     end)
   end)
 end

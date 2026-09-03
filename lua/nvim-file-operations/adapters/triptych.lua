@@ -16,7 +16,7 @@ function M.setup()
     did_delete_files = { "TriptychDidDeleteNode" },
   }
 
-  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, file_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(module, fn_name, file_event)
     vim.api.nvim_create_autocmd("User", {
       pattern = file_event,
       desc = "nvim-file-operations triptych adapter",
@@ -30,7 +30,7 @@ function M.setup()
           or (event.data.path and { fname = event.data.path } or nil)
 
         if payload then
-          require(handler_module).callback(payload)
+          require(module)[fn_name](payload)
         end
       end,
     })

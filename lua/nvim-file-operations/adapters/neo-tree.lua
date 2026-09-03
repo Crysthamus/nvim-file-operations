@@ -16,14 +16,14 @@ function M.setup()
     did_delete_files = { neo_tree_events.FILE_DELETED },
   }
 
-  require("nvim-file-operations.events").bind_adapters(events, function(handler_module, tree_event)
-    local id = ("%s.%s"):format(handler_module, tree_event)
+  require("nvim-file-operations.events").bind_adapters(events, function(module, fn_name, tree_event)
+    local id = ("%s.%s"):format(module, tree_event)
     neo_tree_events.unsubscribe({ id = id })
     neo_tree_events.subscribe({
       id = id,
       event = tree_event,
       handler = function(args)
-        require(handler_module).callback(
+        require(module)[fn_name](
           type(args) == "table" and { old_name = args.source, new_name = args.destination }
             or { fname = args }
         )
